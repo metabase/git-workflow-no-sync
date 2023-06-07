@@ -5,6 +5,7 @@ on:
     - cron: '0 */6 * * *' # Every six hours every day
 env:
   MB_VERSION: 1.46.4
+  COLLECTIONS_TO_SYNC: '2,3,4'
   MB_DB_TYPE: postgres
   MB_DB_DBNAME: metabase
   MB_DB_HOST: ${{ secrets.MB_DB_HOST }}
@@ -20,9 +21,9 @@ jobs:
         run: |
           curl -OL https://downloads.metabase.com/enterprise/v$MB_VERSION/metabase.jar
           stat ./metabase.jar
-      - name: Export datamodel
+      - name: Export datamodel and curated collections
         run: |
-          java -jar metabase.jar export $GITHUB_WORKSPACE --no-collections --no-settings
+          java -jar metabase.jar export $GITHUB_WORKSPACE --collections $COLLECTIONS_TO_SYNC --no-settings
       - name: Push Git commit
         run: |
           git config user.name github-actions
